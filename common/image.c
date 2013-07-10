@@ -1066,7 +1066,8 @@ int boot_get_ramdisk(int argc, char * const argv[], bootm_headers_t *images,
  *      end address (after possible relocation)
  *
  * boot_ramdisk_high() takes a relocation hint from "initrd_high" environment
- * variable and if requested ramdisk data is moved to a specified location.
+ * variable and if requested ramdisk data is moved to a specified location. If
+ * no such hint is given, the default is to relocate the initrd to low memory.
  *
  * Initrd_start and initrd_end are set to final (after relocation) ramdisk
  * start/end addresses if ramdisk image start and len were provided,
@@ -1091,8 +1092,8 @@ int boot_ramdisk_high(struct lmb *lmb, ulong rd_data, ulong rd_len,
 		if (initrd_high == ~0)
 			initrd_copy_to_ram = 0;
 	} else {
-		/* not set, no restrictions to load high */
-		initrd_high = ~0;
+		/* make sure to put ramdisk in low memory */
+		initrd_high = getenv_bootm_low() + getenv_bootm_mapsize();
 	}
 
 
