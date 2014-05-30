@@ -32,6 +32,9 @@
 #ifdef CONFIG_SPI_FLASH
 #define CONFIG_DFU_SF
 #endif
+/* Testing hack */
+#define CONFIG_EXT4_WRITE
+#define CONFIG_CMD_EXT4_WRITE
 #endif
 
 #endif /* _TEGRA_COMMON_USB_GADGET_H_ */
