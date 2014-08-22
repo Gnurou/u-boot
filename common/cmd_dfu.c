@@ -13,6 +13,8 @@
 #include <g_dnl.h>
 #include <usb.h>
 
+static bool dfu_reset;
+
 static int do_dfu(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 {
 	bool dfu_reset = false;
