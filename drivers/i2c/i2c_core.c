@@ -410,3 +410,56 @@ void __i2c_init(int speed, int slaveaddr)
 }
 void i2c_init(int speed, int slaveaddr)
 	__attribute__((weak, alias("__i2c_init")));
+
+struct i2c_adapter *i2c_adapter_get(unsigned int index)
+{
+	struct i2c_adapter *adapter = ll_entry_start(struct i2c_adapter, i2c);
+	unsigned int num = ll_entry_count(struct i2c_adapter, i2c);
+	unsigned int i;
+
+	if (index >= num)
+		return NULL;
+
+	for (i = 0; i < index; i++)
+		adapter++;
+
+	i2c_adapter_init(adapter, adapter->speed, adapter->slaveaddr);
+	return adapter;
+}
+
+int i2c_adapter_read(struct i2c_adapter *adapter, uint8_t chip,
+		     unsigned int address, size_t alen, void *buffer,
+		     size_t size)
+{
+	return adapter->read(adapter, chip, address, alen, buffer, size);
+}
+
+int i2c_adapter_write(struct i2c_adapter *adapter, uint8_t chip,
+		      unsigned int address, size_t alen, void *buffer,
+		      size_t size)
+{
+	return adapter->write(adapter, chip, address, alen, buffer, size);
+}
+
+int i2c_client_init(struct i2c_client *client, struct i2c_adapter *adapter,
+		    uint8_t address)
+{
+	client->adapter = adapter;
+	client->address = address;
+
+	return 0;
+}
+
+int i2c_client_read(struct i2c_client *client, unsigned int address,
+		    size_t alen, void *buffer, size_t size)
+{
+	return i2c_adapter_read(client->adapter, client->address, address,
+				alen, buffer, size);
+}
+
+int i2c_client_write(struct i2c_client *client, unsigned int address,
+		     size_t alen, void *buffer, size_t size)
+{
+	return i2c_adapter_write(client->adapter, client->address, address,
+				 alen, buffer, size);
+}
