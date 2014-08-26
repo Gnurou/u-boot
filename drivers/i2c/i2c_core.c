@@ -214,17 +214,20 @@ static int i2c_mux_disconnet_all(void)
  * Initializes one bus. Will initialize the parent adapter. No current bus
  * changes, no mux (if any) setup.
  */
-static void i2c_init_bus(unsigned int bus_no, int speed, int slaveaddr)
+static void i2c_init_bus(unsigned int bus, int speed, int slaveaddr)
 {
-	if (bus_no >= CONFIG_SYS_NUM_I2C_BUSES)
+	struct i2c_adapter *adapter;
+
+	if (bus >= CONFIG_SYS_NUM_I2C_BUSES)
 		return;
 
-	I2C_ADAP->init(I2C_ADAP, speed, slaveaddr);
+	adapter = i2c_get_adapter(I2C_ADAPTER(bus));
+	adapter->init(adapter, speed, slaveaddr);
 
 	if (gd->flags & GD_FLG_RELOC) {
-		I2C_ADAP->init_done = 1;
-		I2C_ADAP->speed = speed;
-		I2C_ADAP->slaveaddr = slaveaddr;
+		adapter->init_done = 1;
+		adapter->speed = speed;
+		adapter->slaveaddr = slaveaddr;
 	}
 }
 
