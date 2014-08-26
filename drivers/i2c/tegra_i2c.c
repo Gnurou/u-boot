@@ -21,6 +21,7 @@ DECLARE_GLOBAL_DATA_PTR;
 
 /* Information about i2c controller */
 struct i2c_bus {
+	int			node;
 	int			id;
 	enum periph_id		periph_id;
 	int			speed;
@@ -400,6 +401,7 @@ static int process_nodes(const void *blob, int node_list[], int count,
 			continue;
 
 		i2c_bus = &i2c_controllers[i];
+		i2c_bus->node = node;
 		i2c_bus->id = i;
 
 		if (i2c_get_config(blob, node, i2c_bus)) {
@@ -620,6 +622,17 @@ int tegra_i2c_get_dvc_bus_num(void)
 		if (bus->inited && bus->is_dvc)
 			return i;
 	}
+
+	return -1;
+}
+
+int i2c_get_bus_num_fdt(int node)
+{
+	unsigned int i;
+
+	for (i = 0; i < TEGRA_I2C_NUM_CONTROLLERS; i++)
+		if (node == i2c_controllers[i].node)
+			return i;
 
 	return -1;
 }
