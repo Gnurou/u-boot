@@ -207,6 +207,18 @@ static int i2c_mux_disconnet_all(void)
 }
 #endif
 
+static void i2c_adapter_init(struct i2c_adapter *adapter, unsigned int speed,
+			     unsigned int slaveaddr)
+{
+	adapter->init(adapter, speed, slaveaddr);
+
+	if (gd->flags & GD_FLG_RELOC) {
+		adapter->slaveaddr = slaveaddr;
+		adapter->speed = speed;
+		adapter->init_done = 1;
+	}
+}
+
 /*
  * i2c_init_bus():
  * ---------------
@@ -222,13 +234,7 @@ static void i2c_init_bus(unsigned int bus, int speed, int slaveaddr)
 		return;
 
 	adapter = i2c_get_adapter(I2C_ADAPTER(bus));
-	adapter->init(adapter, speed, slaveaddr);
-
-	if (gd->flags & GD_FLG_RELOC) {
-		adapter->init_done = 1;
-		adapter->speed = speed;
-		adapter->slaveaddr = slaveaddr;
-	}
+	i2c_adapter_init(adapter, speed, slaveaddr);
 }
 
 /* implement possible board specific board init */
