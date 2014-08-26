@@ -45,6 +45,7 @@
  */
 #define CONFIG_SYS_MALLOC_LEN		(4 << 20)	/* 4MB  */
 #define CONFIG_SYS_MALLOC_F_LEN	(1 << 10)
+#define CONFIG_SYS_NONCACHED_MEMORY	(1 << 20)	/* 1 MiB */
 
 /*
  * NS16550 Configuration
