@@ -3,6 +3,9 @@ if TEGRA30
 choice
 	prompt "Tegra30 board select"
 
+config TARGET_APALIS_T30
+	bool "Toradex Apalis T30 board"
+
 config TARGET_BEAVER
 	bool "NVIDIA Tegra30 Beaver evaluation board"
 
@@ -21,6 +24,7 @@ config SYS_SOC
 	string
 	default "tegra30"
 
+source "board/toradex/apalis_t30/Kconfig"
 source "board/nvidia/beaver/Kconfig"
 source "board/nvidia/cardhu/Kconfig"
 source "board/toradex/colibri_t30/Kconfig"
