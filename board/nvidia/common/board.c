@@ -6,6 +6,7 @@
  */
 
 #include <common.h>
+#include <fdt_support.h>
 #include <ns16550.h>
 #include <linux/compiler.h>
 #include <asm/io.h>
@@ -256,3 +257,18 @@ void pad_init_mmc(struct mmc_host *host)
 #endif	/* T30 */
 }
 #endif	/* MMC */
+
+/* Enable GPU node on SoCs that require it */
+#ifdef CONFIG_TEGRA124
+void ft_board_setup(void *blob, bd_t *bd)
+{
+	static const char okay[] = "okay";
+
+	printf("Fixing up DT...\n");
+	do_fixup_by_compat(blob, "nvidia,gk20a", "status", okay, sizeof(okay), 1);
+}
+#else
+void ft_board_setup(void *blob, bd_t *bd)
+{
+}
+#endif
