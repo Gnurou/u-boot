@@ -453,6 +453,8 @@ int pci_hose_scan_bus(struct pci_controller *hose, int bus)
 #ifdef CONFIG_PCI_FIXUP_DEV
 		board_pci_fixup_dev(hose, dev, vendor, device, class);
 #endif
+		if (hose->fixup)
+			hose->fixup(hose, dev);
 
 #ifdef CONFIG_PCI_SCAN_SHOW
 		indent++;

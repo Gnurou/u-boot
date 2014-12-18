@@ -524,6 +524,8 @@ struct pci_controller {
 	struct pci_config_table *config_table;
 
 	void (*fixup_irq)(struct pci_controller *, pci_dev_t);
+	void (*fixup)(struct pci_controller *, pci_dev_t);
+
 #ifndef CONFIG_DM_PCI
 	/* Low-level architecture-dependent routines */
 	int (*read_byte)(struct pci_controller*, pci_dev_t, int where, u8 *);
