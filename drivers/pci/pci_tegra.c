@@ -1089,7 +1089,7 @@ static int process_nodes(const void *fdt, int nodes[], unsigned int count)
 			       NV_PA_SDRAM_BASE, gd->ram_size,
 			       PCI_REGION_MEM | PCI_REGION_SYS_MEMORY);
 
-		pci_set_region(&pcie->hose.regions[1], pcie->io.start,
+		pci_set_region(&pcie->hose.regions[1], 0,
 			       pcie->io.start, fdt_resource_size(&pcie->io),
 			       PCI_REGION_IO);
 
