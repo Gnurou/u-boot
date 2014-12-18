@@ -259,6 +259,11 @@ int pci_hose_config_device(struct pci_controller *hose,
 			   pci_addr_t mem,
 			   unsigned long command)
 {
+#ifdef CONFIG_SYS_CACHE_SIZE
+	u8 cacheline_size = CONFIG_SYS_CACHE_SIZE >> 2;
+#else
+	u8 cacheline_size = 8;
+#endif
 	u32 bar_response;
 	unsigned int old_command;
 	pci_addr_t bar_value;
@@ -328,7 +333,7 @@ int pci_hose_config_device(struct pci_controller *hose,
 	}
 
 	/* Configure Cache Line Size Register */
-	pci_hose_write_config_byte(hose, dev, PCI_CACHE_LINE_SIZE, 0x08);
+	pci_hose_write_config_byte(hose, dev, PCI_CACHE_LINE_SIZE, cacheline_size);
 
 	/* Configure Latency Timer */
 	pci_hose_write_config_byte(hose, dev, PCI_LATENCY_TIMER, 0x80);
