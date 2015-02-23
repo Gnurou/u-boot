@@ -22,10 +22,15 @@
 #define TEGRA_RESET_EXCEPTION_VECTOR	0x6000f100
 
 #define TEGRA_FLOW_CTRL_BASE		0x60007000
+#define FLOW_CTRL_HALT_CPU_EVENTS	0x00
+#define FLOW_MODE_WAIT_EVENT		(2 << 29)
+#define FLOW_CTRL_HALT_CPU1_EVENTS	0x14
 #define FLOW_CTRL_CPU_CSR		0x08
 #define CSR_ENABLE			(1 << 0)
 #define CSR_IMMEDIATE_WAKE		(1 << 3)
 #define CSR_WAIT_WFI_SHIFT		8
+#define CSR_EVENT_FLAG			(1 << 14)
+#define CSR_INTR_FLAG			(1 << 15)
 #define FLOW_CTRL_CPU1_CSR		0x18
 
 @ converts CPU ID into FLOW_CTRL_CPUn_CSR offset
@@ -34,6 +39,14 @@
 	lsl	\tmp, \cpu, #3	@ multiple by 8 (register offset CPU1-3)
 	moveq	\ofs, #FLOW_CTRL_CPU_CSR
 	addne	\ofs, \tmp, #FLOW_CTRL_CPU1_CSR - 8
+.endm
+
+@ converts CPU ID into FLOW_CTRL_HALT_CPUn_EVENTS offset
+.macro get_halt_events_reg cpu, ofs, tmp
+	cmp	\cpu, #0		@ CPU0?
+	lsl	\tmp, \cpu, #3	@ multiple by 8 (register offset CPU1-3)
+	moveq	\ofs, #FLOW_CTRL_HALT_CPU_EVENTS
+	addne	\ofs, \tmp, #FLOW_CTRL_HALT_CPU1_EVENTS - 8
 .endm
 
 ENTRY(psci_arch_init)
@@ -75,12 +88,28 @@ ENTRY(psci_cpu_off)
 
 	bl	psci_get_cpu_id		@ CPU ID => r0
 
+	ldr	r6, =TEGRA_FLOW_CTRL_BASE
+
+	get_halt_events_reg r0, r2, r3
+
+	mov	r5, #FLOW_MODE_WAIT_EVENT
+	str	r5, [r6, r2]
+
 	get_csr_reg r0, r2, r3
 
-	ldr	r6, =TEGRA_FLOW_CTRL_BASE
-	mov	r5, #(CSR_ENABLE)
-	mov	r4, #(1 << CSR_WAIT_WFI_SHIFT)
-	add	r5, r4, lsl r0
+	ldr	r5, [r6, r2]
+	@ clear interrupt and event flags
+	orr	r5, r5, #CSR_INTR_FLAG
+	orr	r5, r5, #CSR_EVENT_FLAG
+	orr	r5, r5, #CSR_ENABLE
+	@ clear WFI mask
+	mov	r4, #(0xf << CSR_WAIT_WFI_SHIFT)
+	bic	r5, r4
+	@ set WFI mask
+	mov	r4, #(0x1 << CSR_WAIT_WFI_SHIFT)
+	orr	r5, r4, lsl r0
+	@ clear immediate wake bit
+	bic	r5, #CSR_IMMEDIATE_WAKE
 	str	r5, [r6, r2]
 
 _loop:	wfi
