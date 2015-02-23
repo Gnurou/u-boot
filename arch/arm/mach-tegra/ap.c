@@ -273,7 +273,9 @@ static void smmu_enable(void)
 	writel(0xffffffff, &mc->mc_smmu_translation_enable_0);
 	writel(0xffffffff, &mc->mc_smmu_translation_enable_1);
 	writel(0xffffffff, &mc->mc_smmu_translation_enable_2);
+#if defined(CONFIG_TEGRA124)
 	writel(0xffffffff, &mc->mc_smmu_translation_enable_3);
+#endif
 
 	/*
 	 * Enable SMMU globally since access to this register is restricted
