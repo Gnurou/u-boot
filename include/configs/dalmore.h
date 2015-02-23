@@ -77,4 +77,15 @@
 
 #include "tegra-common-post.h"
 
+#define CONFIG_ARMV7_NONSEC			1
+#define CONFIG_ARMV7_VIRT			1
+#define CONFIG_ARMV7_PSCI			1
+/*
+ * Reserve top 1 MiB for secure RAM. Note that the very top 1 MiB is already
+ * used for IROM/HI-VEC on Tegra30 and Tegra114, so the secure RAM needs to
+ * start at 2 MiB from top of memory on those generations.
+ */
+#define CONFIG_ARMV7_SECURE_BASE		0xffe00000
+#define CONFIG_ARMV7_SECURE_RESERVE_SIZE	0x00100000
+
 #endif /* __CONFIG_H */
