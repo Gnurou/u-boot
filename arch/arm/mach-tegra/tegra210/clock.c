@@ -51,6 +51,7 @@ enum clock_type_id {
 	CLOCK_TYPE_MCPTM2C2C3,
 	CLOCK_TYPE_PC2CC3T_S,
 	CLOCK_TYPE_AC2CC3P_TS2,
+	CLOCK_TYPE_PC01C00_C42C41TC40,
 
 	CLOCK_TYPE_COUNT,
 	CLOCK_TYPE_NONE = -1,   /* invalid clock type */
@@ -137,6 +138,10 @@ static enum clock_id clock_source[CLOCK_TYPE_COUNT][CLOCK_MAX_MUX+1] = {
 	/* CLOCK_TYPE_AC2CC3P_TS2 */
 	{ CLK(AUDIO),	CLK(CGENERAL2),	CLK(CGENERAL),	CLK(CGENERAL3),
 		CLK(PERIPH),	CLK(NONE),	CLK(OSC),	CLK(SRC2),
+		MASK_BITS_31_29},
+	/* CLOCK_TYPE_PC01C00_C42C41TC40 */
+	{ CLK(PERIPH),	CLK(CGENERAL_1), CLK(CGENERAL_0), CLK(NONE),
+		CLK(CGENERAL4_2), CLK(CGENERAL4_1), CLK(OSC), CLK(CGENERAL4_0),
 		MASK_BITS_31_29},
 };
 
@@ -305,6 +310,30 @@ static enum clock_type_id clock_periph_type[PERIPHC_COUNT] = {
 	TYPE(PERIPHC_AMX1,	CLOCK_TYPE_AC2CC3P_TS2),
 	TYPE(PERIPHC_VIC,	CLOCK_TYPE_NONE),
 	TYPE(PERIPHC_7Fh,	CLOCK_TYPE_NONE),
+
+	/* 0x80 */
+	TYPE(PERIPHC_SDMMC_LEGACY_TM,	CLOCK_TYPE_NONE),
+	TYPE(PERIPHC_NVDEC,	CLOCK_TYPE_NONE),
+	TYPE(PERIPHC_NVJPG,	CLOCK_TYPE_NONE),
+	TYPE(PERIPHC_NVENC,	CLOCK_TYPE_NONE),
+	TYPE(PERIPHC_84h,	CLOCK_TYPE_NONE),
+	TYPE(PERIPHC_85h,	CLOCK_TYPE_NONE),
+	TYPE(PERIPHC_86h,	CLOCK_TYPE_NONE),
+	TYPE(PERIPHC_87h,	CLOCK_TYPE_NONE),
+
+	/* 0x88 */
+	TYPE(PERIPHC_88h,	CLOCK_TYPE_NONE),
+	TYPE(PERIPHC_89h,	CLOCK_TYPE_NONE),
+	TYPE(PERIPHC_DMIC3,	CLOCK_TYPE_NONE),
+	TYPE(PERIPHC_APE,	CLOCK_TYPE_NONE),
+	TYPE(PERIPHC_QSPI,	CLOCK_TYPE_PC01C00_C42C41TC40),
+	TYPE(PERIPHC_VI_I2C,	CLOCK_TYPE_NONE),
+	TYPE(PERIPHC_USB2_HSIC_TRK,CLOCK_TYPE_NONE),
+	TYPE(PERIPHC_PEX_SATA_USB_RX_BYP,CLOCK_TYPE_NONE),
+
+	/* 0x90 */
+	TYPE(PERIPHC_MAUD,	CLOCK_TYPE_NONE),
+	TYPE(PERIPHC_TSECB,	CLOCK_TYPE_NONE),
 };
 
 /*
@@ -317,6 +346,7 @@ static enum clock_type_id clock_periph_type[PERIPHC_COUNT] = {
  */
 #define NONE(name) (-1)
 #define OFFSET(name, value) PERIPHC_ ## name
+#define INTERNAL_ID(id) (id & 0x000000ff)
 static s8 periph_id_to_internal_id[PERIPH_ID_COUNT] = {
 	/* Low word: 31:0 */
 	NONE(CPU),
@@ -557,6 +587,46 @@ static s8 periph_id_to_internal_id[PERIPH_ID_COUNT] = {
 	NONE(X_RESERVED29),
 	NONE(X_RESERVED30),
 	NONE(X_RESERVED31),
+
+	/* Y: 192 (192 - 223) */
+	NONE(Y_RESERVED0),
+	PERIPHC_SDMMC_LEGACY_TM,
+	PERIPHC_NVDEC,
+	PERIPHC_NVJPG,
+	NONE(Y_RESERVED4),
+	PERIPHC_DMIC3,		/* 197 */
+	PERIPHC_APE,		/* 198 */
+	NONE(Y_RESERVED7),
+
+	/* 200 */
+	NONE(Y_RESERVED8),
+	NONE(Y_RESERVED9),
+	NONE(Y_RESERVED10),
+	NONE(Y_RESERVED11),
+	NONE(Y_RESERVED12),
+	NONE(Y_RESERVED13),
+	NONE(Y_RESERVED14),
+	NONE(Y_RESERVED15),
+
+	/* 208 */
+	PERIPHC_VI_I2C,		/* 208 */
+	NONE(Y_RESERVED17),
+	NONE(Y_RESERVED18),
+	PERIPHC_QSPI,		/* 211 */
+	NONE(Y_RESERVED20),
+	NONE(Y_RESERVED21),
+	NONE(Y_RESERVED22),
+	NONE(Y_RESERVED23),
+
+	/* 216 */
+	NONE(Y_RESERVED24),
+	NONE(Y_RESERVED25),
+	NONE(Y_RESERVED26),
+	PERIPHC_NVENC,		/* 219 */
+	NONE(Y_RESERVED28),
+	NONE(Y_RESERVED29),
+	NONE(Y_RESERVED30),
+	NONE(Y_RESERVED31),
 };
 
 /*
@@ -598,14 +668,28 @@ u32 *get_periph_source_reg(enum periph_id periph_id)
 		return &clkrst->crc_clk_src[PERIPH_ID_CSI+1];
 
 	assert(periph_id >= PERIPH_ID_FIRST && periph_id < PERIPH_ID_COUNT);
-	internal_id = periph_id_to_internal_id[periph_id];
+	internal_id = INTERNAL_ID(periph_id_to_internal_id[periph_id]);
 	assert(internal_id != -1);
-	if (internal_id >= PERIPHC_VW_FIRST) {
+
+	if (internal_id < PERIPHC_VW_FIRST)
+		/* L, H, U */
+		return &clkrst->crc_clk_src[internal_id];
+
+	if (internal_id < PERIPHC_X_FIRST) {
+		/* VW */
 		internal_id -= PERIPHC_VW_FIRST;
 		return &clkrst->crc_clk_src_vw[internal_id];
-	} else {
-		return &clkrst->crc_clk_src[internal_id];
 	}
+
+	if (internal_id < PERIPHC_Y_FIRST) {
+		/* X */
+		internal_id -= PERIPHC_X_FIRST;
+		return &clkrst->crc_clk_src_x[internal_id];
+	}
+
+	/* Y */
+	internal_id -= PERIPHC_Y_FIRST;
+	return &clkrst->crc_clk_src_y[internal_id];
 }
 
 /**
@@ -629,7 +713,7 @@ int get_periph_clock_source(enum periph_id periph_id,
 
 	assert(clock_periph_id_isvalid(periph_id));
 
-	internal_id = periph_id_to_internal_id[periph_id];
+	internal_id = INTERNAL_ID(periph_id_to_internal_id[periph_id]);
 	assert(periphc_internal_id_isvalid(internal_id));
 
 	type = clock_periph_type[internal_id];
@@ -663,8 +747,13 @@ void clock_set_enable(enum periph_id periph_id, int enable)
 	assert(clock_periph_id_isvalid(periph_id));
 	if ((int)periph_id < (int)PERIPH_ID_VW_FIRST)
 		clk = &clkrst->crc_clk_out_enb[PERIPH_REG(periph_id)];
-	else
+	else if ((int)periph_id < (int)PERIPH_ID_X_FIRST)
 		clk = &clkrst->crc_clk_out_enb_vw[PERIPH_REG(periph_id)];
+	else if ((int)periph_id < (int)PERIPH_ID_Y_FIRST)
+		clk = &clkrst->crc_clk_out_enb_x;
+	else
+		clk = &clkrst->crc_clk_out_enb_y;
+
 	reg = readl(clk);
 	if (enable)
 		reg |= PERIPH_MASK(periph_id);
@@ -684,8 +773,13 @@ void reset_set_enable(enum periph_id periph_id, int enable)
 	assert(clock_periph_id_isvalid(periph_id));
 	if (periph_id < PERIPH_ID_VW_FIRST)
 		reset = &clkrst->crc_rst_dev[PERIPH_REG(periph_id)];
-	else
+	else if ((int)periph_id < (int)PERIPH_ID_X_FIRST)
 		reset = &clkrst->crc_rst_dev_vw[PERIPH_REG(periph_id)];
+	else if ((int)periph_id < (int)PERIPH_ID_Y_FIRST)
+		reset = &clkrst->crc_rst_devices_x;
+	else
+		reset = &clkrst->crc_rst_devices_y;
+
 	reg = readl(reset);
 	if (enable)
 		reg |= PERIPH_MASK(periph_id);
