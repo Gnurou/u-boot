@@ -1,0 +1,6 @@
+NORRIN BOARD
+M:	Thierry Reding <treding@nvidia.com>
+S:	Maintained
+F:	board/nvidia/norrin/
+F:	include/configs/norrin.h
+F:	configs/norrin_defconfig

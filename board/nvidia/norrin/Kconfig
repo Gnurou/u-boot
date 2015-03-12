@@ -1,0 +1,12 @@
+if TARGET_NORRIN
+
+config SYS_BOARD
+	default "norrin"
+
+config SYS_VENDOR
+	default "nvidia"
+
+config SYS_CONFIG_NAME
+	default "norrin"
+
+endif
