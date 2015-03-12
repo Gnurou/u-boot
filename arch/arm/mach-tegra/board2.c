@@ -184,6 +184,28 @@ int board_init(void)
 	return 0;
 }
 
+#ifdef CONFIG_EARLY_CONSOLE
+#define UART_THR 0x00
+#define UART_LSR 0x14
+
+void early_putc(char ch)
+{
+	uint32_t mask = UART_LSR_TEMT | UART_LSR_THRE, value;
+	unsigned long base = CONFIG_SYS_NS16550_COM1;
+
+	if (ch == '\n')
+		early_putc('\r');
+
+	writel(ch, base + UART_THR);
+
+	while (true) {
+		value = readl(base + UART_LSR);
+		if ((value & mask) == mask)
+			break;
+	}
+}
+#endif
+
 #ifdef CONFIG_BOARD_EARLY_INIT_F
 static void __gpio_early_init(void)
 {
