@@ -479,6 +479,16 @@ void putc(const char c)
 	}
 }
 
+#ifdef CONFIG_EARLY_CONSOLE
+extern void early_putc(char ch);
+
+static void early_puts(const char *s)
+{
+	while (*s)
+		early_putc(*s++);
+}
+#endif
+
 void puts(const char *s)
 {
 #ifdef CONFIG_SANDBOX
@@ -496,6 +506,11 @@ void puts(const char *s)
 #ifdef CONFIG_DISABLE_CONSOLE
 	if (gd->flags & GD_FLG_DISABLE_CONSOLE)
 		return;
+#endif
+
+#ifdef CONFIG_EARLY_CONSOLE
+	if (!gd->have_console)
+		early_puts(s);
 #endif
 
 	if (!gd->have_console)
@@ -517,7 +532,8 @@ int printf(const char *fmt, ...)
 	uint i;
 	char printbuffer[CONFIG_SYS_PBSIZE];
 
-#if !defined(CONFIG_SANDBOX) && !defined(CONFIG_PRE_CONSOLE_BUFFER)
+#if !defined(CONFIG_SANDBOX) && !defined(CONFIG_PRE_CONSOLE_BUFFER) && \
+    !defined(CONFIG_EARLY_CONSOLE)
 	if (!gd->have_console)
 		return 0;
 #endif
@@ -540,7 +556,8 @@ int vprintf(const char *fmt, va_list args)
 	uint i;
 	char printbuffer[CONFIG_SYS_PBSIZE];
 
-#if defined(CONFIG_PRE_CONSOLE_BUFFER) && !defined(CONFIG_SANDBOX)
+#if !defined(CONFIG_SANDBOX) && !defined(CONFIG_PRE_CONSOLE_BUFFER) && \
+    !defined(CONFIG_EARLY_CONSOLE)
 	if (!gd->have_console)
 		return 0;
 #endif

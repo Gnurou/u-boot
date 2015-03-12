@@ -4988,6 +4988,23 @@ Low Level (hardware related) configuration options:
 		driver that uses this:
 		drivers/mtd/nand/davinci_nand.c
 
+- CONFIG_EARLY_CONSOLE
+		Enables support for an early console. Output from puts() and
+		printf() will be redirected to this early console. A primary
+		use-case for this is early board bring up, where U-Boot does
+		not boot to the proper console yet, but it can also be quite
+		handy to help debug U-Boot's early boot phases.
+
+		Boards that specify this option in their configuration must
+		provide an implementation of the early_putc() function:
+
+			void early_putc(char ch);
+
+		This function should output a single character on a device
+		that is available during early boot. Often this will be a
+		debug UART that has been preconfigured by a bootloader or
+		ROM before executing U-Boot.
+
 Freescale QE/FMAN Firmware Support:
 -----------------------------------
 
