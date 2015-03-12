@@ -46,7 +46,9 @@
 #define CONFIG_SYS_MALLOC_LEN		(4 << 20)	/* 4MB  */
 #endif
 
+#ifndef CONFIG_ARM64
 #define CONFIG_SYS_NONCACHED_MEMORY	(1 << 20)       /* 1 MiB */
+#endif
 
 /*
  * NS16550 Configuration
@@ -115,8 +117,10 @@
 #define CONFIG_SYS_MEMTEST_START	(NV_PA_SDRC_CS0 + 0x600000)
 #define CONFIG_SYS_MEMTEST_END		(CONFIG_SYS_MEMTEST_START + 0x100000)
 
+#ifndef CONFIG_ARM64
 #ifndef CONFIG_SPL_BUILD
 #define CONFIG_USE_ARCH_MEMCPY
+#endif
 #endif
 
 /*-----------------------------------------------------------------------
