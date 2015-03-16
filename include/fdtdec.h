@@ -748,6 +748,14 @@ int fdtdec_read_fmap_entry(const void *blob, int node, const char *name,
 			   struct fmap_entry *entry);
 
 /**
+ * Read a number from a device property.
+ * @param ptr		pointer to the cells to read
+ * @param cells		number of cells to consume
+ * @return The number contained in @cells cells at @ptr, in host byte order.
+ */
+u64 fdtdec_get_number(const fdt32_t *ptr, unsigned int cells);
+
+/**
  * Obtain an indexed resource from a device property.
  *
  * @param fdt		FDT blob
