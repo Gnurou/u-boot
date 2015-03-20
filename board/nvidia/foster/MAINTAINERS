@@ -1,0 +1,6 @@
+FOSTER BOARD
+M:	Tom Warren <twarren@nvidia.com>
+S:	Maintained
+F:	board/nvidia/foster/
+F:	include/configs/foster.h
+F:	configs/foster_defconfig

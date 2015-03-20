@@ -1,0 +1,12 @@
+if TARGET_FOSTER
+
+config SYS_BOARD
+	default "foster"
+
+config SYS_VENDOR
+	default "nvidia"
+
+config SYS_CONFIG_NAME
+	default "foster"
+
+endif

@@ -3,9 +3,14 @@ if TEGRA210
 choice
 	prompt "Tegra210 board select"
 
+config TARGET_FOSTER
+	bool "NVIDIA Tegra210 Foster board"
+
 endchoice
 
 config SYS_SOC
 	default "tegra210"
+
+source "board/nvidia/foster/Kconfig"
 
 endif
