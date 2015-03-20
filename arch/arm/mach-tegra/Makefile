@@ -32,3 +32,4 @@ obj-$(CONFIG_TEGRA20) += tegra20/
 obj-$(CONFIG_TEGRA30) += tegra30/
 obj-$(CONFIG_TEGRA114) += tegra114/
 obj-$(CONFIG_TEGRA124) += tegra124/
+obj-$(CONFIG_TEGRA132) += tegra132/

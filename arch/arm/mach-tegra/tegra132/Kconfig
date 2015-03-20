@@ -1,0 +1,16 @@
+if TEGRA132
+
+choice
+	prompt "Tegra132 board select"
+
+config TARGET_NORRIN
+	bool "NVIDIA Tegra132 Norrin board"
+
+endchoice
+
+config SYS_SOC
+	default "tegra132"
+
+source "board/nvidia/norrin/Kconfig"
+
+endif
