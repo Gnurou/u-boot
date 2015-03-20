@@ -668,6 +668,18 @@ void tegra_mmc_init(void)
 	const void *blob = gd->fdt_blob;
 	debug("%s entry\n", __func__);
 
+	/* See if any Tegra210 MMC controllers are present */
+	count = fdtdec_find_aliases_for_id(blob, "sdhci",
+					   COMPAT_NVIDIA_TEGRA210_SDMMC,
+					   node_list,
+					   CONFIG_SYS_MMC_MAX_DEVICE);
+	debug("%s: count of Tegra210 SDHCI nodes is %d\n", __func__, count);
+	if (process_nodes(blob, node_list, count)) {
+		printf("%s: Error processing Tegra210 MMC node(s)!\n",
+		       __func__);
+		return;
+	}
+
 	/* See if any Tegra124 MMC controllers are present */
 	count = fdtdec_find_aliases_for_id(blob, "sdhci",
 		COMPAT_NVIDIA_TEGRA124_SDMMC, node_list,
