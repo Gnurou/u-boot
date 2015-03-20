@@ -42,6 +42,7 @@ static unsigned osc_freq[CLOCK_OSC_FREQ_COUNT] = {
 	19200000,
 	12000000,
 	26000000,
+	38400000,
 };
 
 /* return 1 if a peripheral ID is in range */

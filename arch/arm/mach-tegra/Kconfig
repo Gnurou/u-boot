@@ -61,6 +61,11 @@ config TEGRA132
 	select ARM64
 	select OF_CONTROL
 
+config TEGRA210
+	bool "Tegra210 family"
+	select ARM64
+	select OF_CONTROL
+
 endchoice
 
 config SYS_MALLOC_F_LEN
@@ -78,5 +83,6 @@ source "arch/arm/mach-tegra/tegra30/Kconfig"
 source "arch/arm/mach-tegra/tegra114/Kconfig"
 source "arch/arm/mach-tegra/tegra124/Kconfig"
 source "arch/arm/mach-tegra/tegra132/Kconfig"
+source "arch/arm/mach-tegra/tegra210/Kconfig"
 
 endif
