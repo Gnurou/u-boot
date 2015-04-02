@@ -445,6 +445,11 @@ void reset_cmplx_set_enable(int cpu, int which, int reset)
 		writel(mask, &clkrst->crc_cpu_cmplx_clr);
 }
 
+unsigned __weak clk_m_get_rate(unsigned parent_rate)
+{
+	return parent_rate;
+}
+
 unsigned clock_get_rate(enum clock_id clkid)
 {
 	struct clk_pll *pll;
@@ -456,6 +461,9 @@ unsigned clock_get_rate(enum clock_id clkid)
 	parent_rate = osc_freq[clock_get_osc_freq()];
 	if (clkid == CLOCK_ID_OSC)
 		return parent_rate;
+
+	if (clkid == CLOCK_ID_CLK_M)
+		return clk_m_get_rate(parent_rate);
 
 	pll = get_pll(clkid);
 	if (!pll)
@@ -595,9 +603,11 @@ void clock_init(void)
 	pll_rate[CLOCK_ID_CGENERAL] = clock_get_rate(CLOCK_ID_CGENERAL);
 	pll_rate[CLOCK_ID_DISPLAY] = clock_get_rate(CLOCK_ID_DISPLAY);
 	pll_rate[CLOCK_ID_OSC] = clock_get_rate(CLOCK_ID_OSC);
+	pll_rate[CLOCK_ID_CLK_M] = clock_get_rate(CLOCK_ID_CLK_M);
 	pll_rate[CLOCK_ID_SFROM32KHZ] = 32768;
 	pll_rate[CLOCK_ID_XCPU] = clock_get_rate(CLOCK_ID_XCPU);
 	debug("Osc = %d\n", pll_rate[CLOCK_ID_OSC]);
+	debug("CLKM = %d\n", pll_rate[CLOCK_ID_CLK_M]);
 	debug("PLLM = %d\n", pll_rate[CLOCK_ID_MEMORY]);
 	debug("PLLP = %d\n", pll_rate[CLOCK_ID_PERIPH]);
 	debug("PLLC = %d\n", pll_rate[CLOCK_ID_CGENERAL]);
