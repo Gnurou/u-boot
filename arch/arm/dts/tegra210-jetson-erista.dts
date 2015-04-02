@@ -1,0 +1,100 @@
+/dts-v1/;
+
+#include <dt-bindings/input/input.h>
+#include "tegra210.dtsi"
+
+/ {
+	model = "NVIDIA Tegra210 Jetson-Erista";
+	compatible = "nvidia,jetson-erista", "nvidia,tegra210";
+
+	aliases {
+		i2c0 = "/i2c@0,7000d000";
+		rtc0 = "/i2c@0,7000d000/pmic@3c";
+		rtc1 = "/rtc@0,7000e000";
+		sdhci0 = "/sdhci@0,700b0600";
+		sdhci1 = "/sdhci@0,700b0000";
+		serial0 = &uarta;
+		usb0 = "/usb@0,7d000000";
+	};
+
+	chosen {
+		stdout-path = &uarta;
+	};
+
+	memory {
+		reg = <0x0 0x80000000 0x0 0xc0000000>;
+	};
+
+	pcie-controller@0,01003000 {
+		status = "disabled";
+
+		pci@1,0 {
+			status = "okay";
+		};
+
+		pci@2,0 {
+			status = "okay";
+		};
+	};
+
+	pinmux: pinmux@0,70000868 {
+		pinctrl-names = "boot";
+		pinctrl-0 = <&state_boot>;
+
+		state_boot: pinmux {
+		};
+	};
+
+	/* debug port */
+	serial@0,70006000 {
+		status = "okay";
+	};
+
+	i2c@0,7000d000 {
+		status = "okay";
+		clock-frequency = <400000>;
+
+		pmic: pmic@3c {
+			compatible = "maxim,max77620";
+			reg = <0x3c>;
+			interrupts = <GIC_SPI 86 IRQ_TYPE_LEVEL_HIGH>;
+
+			#interrupt-cells = <2>;
+			interrupt-controller;
+
+			#gpio-cells = <2>;
+			gpio-controller;
+		};
+	};
+
+	sdhci@0,700b0000 {
+		status = "okay";
+		cd-gpios = <&gpio 201 1>; /* gpio PZ1 */
+		power-gpios = <&gpio 204 0>; /* gpio PZ4 */
+		bus-width = <4>;
+	};
+
+	sdhci@0,700b0600 {
+		status = "okay";
+		bus-width = <8>;
+	};
+
+	usb@0,7d000000 {
+		status = "okay";
+		dr_mode = "otg";
+		nvidia,vbus-gpio = <&gpio TEGRA_GPIO(N, 5) GPIO_ACTIVE_HIGH>;
+	};
+
+	clocks {
+		compatible = "simple-bus";
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		clk32k_in: clock@0 {
+			compatible = "fixed-clock";
+			reg = <0>;
+			#clock-cells = <0>;
+			clock-frequency = <32768>;
+		};
+	};
+};

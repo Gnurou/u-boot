@@ -6,11 +6,15 @@ choice
 config TARGET_FOSTER
 	bool "NVIDIA Tegra210 Foster board"
 
+config TARGET_JETSON_ERISTA
+	bool "NVIDIA Tegra210 Jetson-Erista board"
+
 endchoice
 
 config SYS_SOC
 	default "tegra210"
 
 source "board/nvidia/foster/Kconfig"
+source "board/nvidia/jetson-erista/Kconfig"
 
 endif

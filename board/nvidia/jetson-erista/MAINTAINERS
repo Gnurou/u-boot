@@ -1,0 +1,6 @@
+JETSON-ERISTA BOARD
+M:	Thierry Reding <treding@nvidia.com>
+S:	Maintained
+F:	board/nvidia/jetson-erista/
+F:	include/configs/jetson-erista.h
+F:	configs/jetson-erista_defconfig

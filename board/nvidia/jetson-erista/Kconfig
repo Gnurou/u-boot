@@ -1,0 +1,12 @@
+if TARGET_JETSON_ERISTA
+
+config SYS_BOARD
+	default "jetson-erista"
+
+config SYS_VENDOR
+	default "nvidia"
+
+config SYS_CONFIG_NAME
+	default "jetson-erista"
+
+endif
