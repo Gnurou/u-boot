@@ -77,6 +77,7 @@
 
 #include "tegra-common-post.h"
 
+#if 0
 #define CONFIG_ARMV7_NONSEC			1
 #define CONFIG_ARMV7_VIRT			1
 #define CONFIG_ARMV7_PSCI			1
@@ -87,5 +88,6 @@
  */
 #define CONFIG_ARMV7_SECURE_BASE		0xffe00000
 #define CONFIG_ARMV7_SECURE_RESERVE_SIZE	0x00100000
+#endif
 
 #endif /* __CONFIG_H */
