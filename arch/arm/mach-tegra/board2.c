@@ -238,6 +238,8 @@ int board_early_init_f(void)
 
 int board_late_init(void)
 {
+	tegra_smmu_enable();
+
 #ifdef CONFIG_LCD
 	/* Make sure we finish initing the LCD */
 	tegra_lcd_check_next_stage(gd->fdt_blob, 1);

@@ -260,7 +260,7 @@ static void smmu_flush(struct mc_ctlr *mc)
 	(void)readl(&mc->mc_smmu_config);
 }
 
-static void smmu_enable(void)
+void tegra_smmu_enable(void)
 {
 	struct mc_ctlr *mc = (struct mc_ctlr *)NV_PA_MC_BASE;
 	u32 value;
@@ -287,10 +287,6 @@ static void smmu_enable(void)
 
 	smmu_flush(mc);
 }
-#else
-static void smmu_enable(void)
-{
-}
 #endif
 
 void s_init(void)
@@ -302,9 +298,6 @@ void s_init(void)
 
 	/* init the cache */
 	config_cache();
-
-	/* enable SMMU */
-	smmu_enable();
 
 	/* init vpr */
 	config_vpr();
