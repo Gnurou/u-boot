@@ -254,7 +254,7 @@ void ap_pm_init(void)
 }
 #endif
 
-#if defined(CONFIG_ARMV7_NONSEC)
+#if defined(CONFIG_ARMV7_NONSEC) || defined(CONFIG_ARM64)
 static void smmu_flush(struct mc_ctlr *mc)
 {
 	(void)readl(&mc->mc_smmu_config);
@@ -273,8 +273,11 @@ void tegra_smmu_enable(void)
 	writel(0xffffffff, &mc->mc_smmu_translation_enable_0);
 	writel(0xffffffff, &mc->mc_smmu_translation_enable_1);
 	writel(0xffffffff, &mc->mc_smmu_translation_enable_2);
-#if defined(CONFIG_TEGRA124)
+#if defined(CONFIG_TEGRA124) || defined(CONFIG_TEGRA210)
 	writel(0xffffffff, &mc->mc_smmu_translation_enable_3);
+#endif
+#if defined(CONFIG_TEGRA210)
+	writel(0xffffffff, &mc->mc_smmu_translation_enable_4);
 #endif
 
 	/*

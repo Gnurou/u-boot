@@ -62,6 +62,8 @@ struct mc_ctlr {
 	u32 mc_video_protect_bom;		/* offset 0x648 */
 	u32 mc_video_protect_size_mb;		/* offset 0x64c */
 	u32 mc_video_protect_reg_ctrl;		/* offset 0x650 */
+	u32 reserved11[337];			/* offset 0x654 - 0xb94 */
+	u32 mc_smmu_translation_enable_4;	/* offset 0xb98 */
 };
 
 #define TEGRA_MC_SMMU_CONFIG_ENABLE (1 << 0)
