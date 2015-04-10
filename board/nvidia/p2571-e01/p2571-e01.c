@@ -12,7 +12,7 @@
 #include <asm/arch/pinmux.h>
 #include <asm/gpio.h>
 
-#include "pinmux-config-foster.h"
+#include "pinmux-config-p2571-e01.h"
 
 /*
  * Routine: pinmux_init
@@ -22,19 +22,19 @@ void pinmux_init(void)
 {
 	pinmux_clear_tristate_input_clamping();
 
-	gpio_config_table(foster_gpio_inits,
-			  ARRAY_SIZE(foster_gpio_inits));
+	gpio_config_table(p2571_e01_gpio_inits,
+			  ARRAY_SIZE(p2571_e01_gpio_inits));
 
-	pinmux_config_pingrp_table(foster_pingrps,
-				   ARRAY_SIZE(foster_pingrps));
+	pinmux_config_pingrp_table(p2571_e01_pingrps,
+				   ARRAY_SIZE(p2571_e01_pingrps));
 
-	pinmux_config_drvgrp_table(foster_drvgrps,
-				   ARRAY_SIZE(foster_drvgrps));
+	pinmux_config_drvgrp_table(p2571_e01_drvgrps,
+				   ARRAY_SIZE(p2571_e01_drvgrps));
 }
 
 /*
  * Routine: start_cpu_fan
- * Description: Enable/start PWM CPU fan on Foster-FFD
+ * Description: Enable/start PWM CPU fan on P2530
  */
 void start_cpu_fan(void)
 {

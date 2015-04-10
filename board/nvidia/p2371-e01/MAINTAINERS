@@ -1,0 +1,6 @@
+NVIDIA P2371 E.1 BOARD
+M:	Thierry Reding <treding@nvidia.com>
+S:	Maintained
+F:	board/nvidia/p2371-e01/
+F:	include/configs/p2371-e01.h
+F:	configs/p2371-e01_defconfig

@@ -4,4 +4,4 @@
 # SPDX-License-Identifier: GPL-2.0+
 #
 
-obj-y += jetson-erista.o
+obj-y += p2371-e01.o

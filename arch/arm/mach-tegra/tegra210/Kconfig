@@ -3,18 +3,18 @@ if TEGRA210
 choice
 	prompt "Tegra210 board select"
 
-config TARGET_FOSTER
-	bool "NVIDIA Tegra210 Foster board"
+config TARGET_P2371_E01
+	bool "NVIDIA Tegra210 P2371 reference board (E.1)"
 
-config TARGET_JETSON_ERISTA
-	bool "NVIDIA Tegra210 Jetson-Erista board"
+config TARGET_P2571_E01
+	bool "NVIDIA Tegra210 P2571 reference board (E.1)"
 
 endchoice
 
 config SYS_SOC
 	default "tegra210"
 
-source "board/nvidia/foster/Kconfig"
-source "board/nvidia/jetson-erista/Kconfig"
+source "board/nvidia/p2371-e01/Kconfig"
+source "board/nvidia/p2571-e01/Kconfig"
 
 endif

@@ -12,7 +12,7 @@
 #include <asm/arch/pinmux.h>
 #include <asm/gpio.h>
 
-#include "pinmux-config-jetson-erista.h"
+#include "pinmux-config-p2371-e01.h"
 
 /*
  * Routine: pinmux_init
@@ -22,19 +22,19 @@ void pinmux_init(void)
 {
 	pinmux_clear_tristate_input_clamping();
 
-	gpio_config_table(jetson_erista_gpio_inits,
-			  ARRAY_SIZE(jetson_erista_gpio_inits));
+	gpio_config_table(p2371_e01_gpio_inits,
+			  ARRAY_SIZE(p2371_e01_gpio_inits));
 
-	pinmux_config_pingrp_table(jetson_erista_pingrps,
-				   ARRAY_SIZE(jetson_erista_pingrps));
+	pinmux_config_pingrp_table(p2371_e01_pingrps,
+				   ARRAY_SIZE(p2371_e01_pingrps));
 
-	pinmux_config_drvgrp_table(jetson_erista_drvgrps,
-				   ARRAY_SIZE(jetson_erista_drvgrps));
+	pinmux_config_drvgrp_table(p2371_e01_drvgrps,
+				   ARRAY_SIZE(p2371_e01_drvgrps));
 }
 
 /*
  * Routine: start_cpu_fan
- * Description: Enable/start PWM CPU fan on Foster-FFD
+ * Description: Enable/start PWM CPU fan on P2530
  */
 void start_cpu_fan(void)
 {

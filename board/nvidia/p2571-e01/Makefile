@@ -4,4 +4,4 @@
 # SPDX-License-Identifier: GPL-2.0+
 #
 
-obj-y += foster.o
+obj-y += p2571-e01.o

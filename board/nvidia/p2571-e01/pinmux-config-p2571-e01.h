@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef _PINMUX_CONFIG_FOSTER_H_
-#define _PINMUX_CONFIG_FOSTER_H_
+#ifndef _PINMUX_CONFIG_P2571_E01_H_
+#define _PINMUX_CONFIG_P2571_E01_H_
 
 #define GPIO_INIT(_gpio, _init)				\
 	{						\
@@ -13,7 +13,7 @@
 		.init	= TEGRA_GPIO_INIT_##_init,	\
 	}
 
-static const struct tegra_gpio_config foster_gpio_inits[] = {
+static const struct tegra_gpio_config p2571_e01_gpio_inits[] = {
 	/*        gpio, init_val */
 	GPIO_INIT(A0,   IN),
 	GPIO_INIT(A5,   IN),
@@ -52,7 +52,7 @@ static const struct tegra_gpio_config foster_gpio_inits[] = {
 		.lock		= PMUX_PIN_LOCK_DEFAULT,		\
 	}
 
-static const struct pmux_pingrp_config foster_pingrps[] = {
+static const struct pmux_pingrp_config p2571_e01_pingrps[] = {
 	/*     pingrp,               mux,      pull,   tri,      e_input, od,      e_io_hv */
 	PINCFG(PEX_L0_RST_N_PA0,     DEFAULT,  UP,     NORMAL,   INPUT,   DISABLE, NORMAL),
 	PINCFG(PEX_L0_CLKREQ_N_PA1,  RSVD1,    DOWN,   TRISTATE, OUTPUT,  DISABLE, NORMAL),
@@ -229,7 +229,7 @@ static const struct pmux_pingrp_config foster_pingrps[] = {
 		.hsm    = PMUX_HSM_##_hsm,		\
 	}
 
-static const struct pmux_drvgrp_config foster_drvgrps[] = {
+static const struct pmux_drvgrp_config p2571_e01_drvgrps[] = {
 };
 
-#endif /* PINMUX_CONFIG_FOSTER_H */
+#endif /* PINMUX_CONFIG_P2571_E01_H */

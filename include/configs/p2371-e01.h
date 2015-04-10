@@ -12,8 +12,8 @@
 #include "tegra210-common.h"
 
 /* High-level configuration options */
-#define V_PROMPT			"Tegra210 (Jetson-Erista) # "
-#define CONFIG_TEGRA_BOARD_STRING	"NVIDIA Jetson-Erista"
+#define V_PROMPT			"Tegra210 (P2371-E01) # "
+#define CONFIG_TEGRA_BOARD_STRING	"NVIDIA P2371-E01"
 
 /* Board-specific serial config */
 #define CONFIG_SERIAL_MULTI
