@@ -254,7 +254,10 @@ void ap_pm_init(void)
 }
 #endif
 
-#if defined(CONFIG_ARMV7_NONSEC) || defined(CONFIG_ARM64)
+#if (defined(CONFIG_ARMV7_NONSEC) || defined(CONFIG_ARM64)) && \
+    (defined(CONFIG_TEGRA30) || defined(CONFIG_TEGRA114) || \
+     defined(CONFIG_TEGRA124) || defined(CONFIG_TEGRA132) || \
+     defined(CONFIG_TEGRA210))
 static void smmu_flush(struct mc_ctlr *mc)
 {
 	(void)readl(&mc->mc_smmu_config);
