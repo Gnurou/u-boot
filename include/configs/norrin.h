@@ -24,8 +24,6 @@
 #define CONFIG_TEGRA_ENABLE_UARTA
 #define CONFIG_SYS_NS16550_COM1		NV_PA_APB_UARTA_BASE
 
-#define CONFIG_BOARD_EARLY_INIT_F
-
 /* I2C */
 #define CONFIG_SYS_I2C_TEGRA
 #define CONFIG_CMD_I2C
@@ -64,25 +62,11 @@
 #define CONFIG_USB_HOST_ETHER
 #define CONFIG_USB_ETHER_ASIX
 
-/* PCI host support */
-#define CONFIG_PCI
-#define CONFIG_PCI_TEGRA
-#define CONFIG_PCI_PNP
-#define CONFIG_CMD_PCI
-#define CONFIG_CMD_PCI_ENUM
-
-/* PCI networking support */
-#define CONFIG_RTL8169
-
 /* General networking support */
 #define CONFIG_CMD_NET
 #define CONFIG_CMD_DHCP
 
 #include "tegra-common-usb-gadget.h"
 #include "tegra-common-post.h"
-
-/* FIXME: */
-#define COUNTER_FREQUENCY 12000000
-#define CPU_RELEASE_ADDR 0x80000000
 
 #endif /* __CONFIG_H */

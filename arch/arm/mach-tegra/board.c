@@ -87,6 +87,13 @@ unsigned int query_sdram_size(void)
 	if (size_bytes == SZ_2G)
 		size_bytes -= SZ_1M;
 #endif
+#if defined(CONFIG_TEGRA132)
+	/*
+	 * The Denver cores on Tegra132 use microcode that is located in a
+	 * carveout region starting at 128 MiB from the top of memory.
+	 */
+	size_bytes -= SZ_128M;
+#endif
 
 	return size_bytes;
 }

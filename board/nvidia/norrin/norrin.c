@@ -6,6 +6,7 @@
  */
 
 #include <common.h>
+#include <i2c.h>
 #include <netdev.h>
 #include <power/as3722.h>
 
@@ -33,6 +34,47 @@ void pinmux_init(void)
 	pinmux_config_drvgrp_table(norrin_drvgrps,
 				   ARRAY_SIZE(norrin_drvgrps));
 }
+
+#ifdef CONFIG_TEGRA_MMC
+void board_mmc_power_init(void)
+{
+	struct udevice *pmic;
+	u8 value;
+	int err;
+
+	printf("> %s()\n", __func__);
+
+	err = i2c_get_chip_for_busnum(0, 0x40, 1, &pmic);
+	if (err < 0) {
+		printf("i2c_get_chip_for_busnum() failed: %d\n", err);
+		return;
+	}
+
+	value = 0x10;
+
+	err = dm_i2c_write(pmic, 0x12, &value, 1);
+	if (err < 0) {
+		printf("failed to set LDO6 to 3.3V: %d\n", err);
+		return;
+	}
+
+	err = dm_i2c_read(pmic, 0x4e, &value, 1);
+	if (err < 0) {
+		printf("failed to read LDO6 control register: %d\n", err);
+		return;
+	}
+
+	value |= 1 << 2;
+
+	err = dm_i2c_write(pmic, 0x4e, &value, 1);
+	if (err < 0) {
+		printf("failed to write LDO6 control register: %d\n", err);
+		return;
+	}
+
+	printf("< %s()\n", __func__);
+}
+#endif
 
 #ifdef CONFIG_PCI_TEGRA
 int tegra_pcie_board_init(void)

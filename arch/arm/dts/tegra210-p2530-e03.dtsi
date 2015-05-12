@@ -6,6 +6,7 @@
 
 	aliases {
 		i2c0 = "/i2c@0,7000d000";
+		i2c1 = "/i2c@0,7000c700";
 		rtc0 = "/i2c@0,7000d000/pmic@3c";
 		rtc1 = "/rtc@0,7000e000";
 		sdhci0 = "/sdhci@0,700b0600";
@@ -25,6 +26,11 @@
 	/* debug port */
 	serial@0,70006000 {
 		status = "okay";
+	};
+
+	i2c@0,7000c700 {
+		status = "okay";
+		clock-frequency = <100000>;
 	};
 
 	i2c@0,7000d000 {
