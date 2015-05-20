@@ -325,6 +325,23 @@ static int tegra_pcie_write_conf(struct pci_controller *hose, pci_dev_t bdf,
 	return 0;
 }
 
+static void tegra_pcie_fixup(struct pci_controller *hose, pci_dev_t dev)
+{
+	u16 value;
+	int pos;
+
+	pos = pci_hose_find_capability(hose, dev, PCI_CAP_ID_EXP);
+	if (!pos)
+		return;
+
+	pci_hose_read_config_word(hose, dev, pos + PCI_EXP_DEVCTL, &value);
+	value |= PCI_EXP_DEVCTL_RELAX;
+	pci_hose_write_config_word(hose, dev, pos + PCI_EXP_DEVCTL, value);
+
+	debug("PCI: relaxed ordering enabled for %02x:%02x.%x\n",
+	      PCI_BUS(dev), PCI_DEV(dev), PCI_FUNC(dev));
+}
+
 static int tegra_pcie_port_parse_dt(const void *fdt, int node,
 				    struct tegra_pcie_port *port)
 {
@@ -1072,7 +1089,7 @@ static int process_nodes(const void *fdt, int nodes[], unsigned int count)
 			       NV_PA_SDRAM_BASE, gd->ram_size,
 			       PCI_REGION_MEM | PCI_REGION_SYS_MEMORY);
 
-		pci_set_region(&pcie->hose.regions[1], pcie->io.start,
+		pci_set_region(&pcie->hose.regions[1], 0,
 			       pcie->io.start, fdt_resource_size(&pcie->io),
 			       PCI_REGION_IO);
 
@@ -1094,6 +1111,7 @@ static int process_nodes(const void *fdt, int nodes[], unsigned int count)
 			    pci_hose_write_config_byte_via_dword,
 			    pci_hose_write_config_word_via_dword,
 			    tegra_pcie_write_conf);
+		pcie->hose.fixup = tegra_pcie_fixup;
 
 		pci_register_hose(&pcie->hose);
 

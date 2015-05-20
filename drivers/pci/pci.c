@@ -13,6 +13,7 @@
  */
 
 #include <common.h>
+#include <errno.h>
 
 #include <command.h>
 #include <errno.h>
@@ -258,6 +259,11 @@ int pci_hose_config_device(struct pci_controller *hose,
 			   pci_addr_t mem,
 			   unsigned long command)
 {
+#ifdef CONFIG_SYS_CACHE_SIZE
+	u8 cacheline_size = CONFIG_SYS_CACHE_SIZE >> 2;
+#else
+	u8 cacheline_size = 8;
+#endif
 	u32 bar_response;
 	unsigned int old_command;
 	pci_addr_t bar_value;
@@ -327,7 +333,7 @@ int pci_hose_config_device(struct pci_controller *hose,
 	}
 
 	/* Configure Cache Line Size Register */
-	pci_hose_write_config_byte(hose, dev, PCI_CACHE_LINE_SIZE, 0x08);
+	pci_hose_write_config_byte(hose, dev, PCI_CACHE_LINE_SIZE, cacheline_size);
 
 	/* Configure Latency Timer */
 	pci_hose_write_config_byte(hose, dev, PCI_LATENCY_TIMER, 0x80);
@@ -447,6 +453,8 @@ int pci_hose_scan_bus(struct pci_controller *hose, int bus)
 #ifdef CONFIG_PCI_FIXUP_DEV
 		board_pci_fixup_dev(hose, dev, vendor, device, class);
 #endif
+		if (hose->fixup)
+			hose->fixup(hose, dev);
 
 #ifdef CONFIG_PCI_SCAN_SHOW
 		indent++;
@@ -586,5 +594,60 @@ int pci_find_cap(struct pci_controller *hose, pci_dev_t dev, int pos, int cap)
 			return pos;
 		pos += PCI_CAP_LIST_NEXT;
 	}
+	return 0;
+}
+
+#ifdef CONFIG_SYS_CACHELINE_SIZE
+static u8 pci_cacheline_size = CONFIG_SYS_CACHELINE_SIZE >> 2;
+#else
+static u8 pci_cacheline_size = 0;
+#endif
+
+int pci_set_cacheline_size(pci_dev_t dev)
+{
+	u8 cacheline_size;
+
+	if (pci_cacheline_size == 0)
+		return -EINVAL;
+
+	/*
+	 * Validate current setting: the PCI_CACHE_LINE_SIZE must be equal to
+	 * or a multiple of the right value.
+	 */
+	pci_read_config_byte(dev, PCI_CACHE_LINE_SIZE, &cacheline_size);
+	if (cacheline_size >= pci_cacheline_size &&
+	    cacheline_size % pci_cacheline_size == 0)
+		return 0;
+
+	/* Write the correct value. */
+	pci_write_config_byte(dev, PCI_CACHE_LINE_SIZE, pci_cacheline_size);
+
+	/* Read it back. */
+	pci_read_config_byte(dev, PCI_CACHE_LINE_SIZE, &cacheline_size);
+	if (cacheline_size == pci_cacheline_size)
+		return 0;
+
+	debug("PCI cache line size of %d is not supported\n",
+	      pci_cacheline_size << 2);
+	return -EINVAL;
+}
+
+int pci_set_mwi(pci_dev_t dev)
+{
+	u16 cmd;
+	int err;
+
+	err = pci_set_cacheline_size(dev);
+	if (err)
+		return err;
+
+	pci_read_config_word(dev, PCI_COMMAND, &cmd);
+	if ((cmd & PCI_COMMAND_INVALIDATE) == 0) {
+		debug("enabling Mem-Wr-Inval for %02x:%02x.%x\n",
+		      PCI_BUS(dev), PCI_DEV(dev), PCI_FUNC(dev));
+		cmd |= PCI_COMMAND_INVALIDATE;
+		pci_write_config_word(dev, PCI_COMMAND, cmd);
+	}
+
 	return 0;
 }

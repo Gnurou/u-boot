@@ -407,6 +407,11 @@
 #define PCI_MSI_DATA_32		8	/* 16 bits of data for 32-bit devices */
 #define PCI_MSI_DATA_64		12	/* 16 bits of data for 64-bit devices */
 
+/* PCI Express capability registers */
+
+#define PCI_EXP_DEVCTL		8
+#define  PCI_EXP_DEVCTL_RELAX	0x0010	/* Enable relaxed ordering */
+
 #define PCI_MAX_PCI_DEVICES	32
 #define PCI_MAX_PCI_FUNCTIONS	8
 
@@ -519,6 +524,8 @@ struct pci_controller {
 	struct pci_config_table *config_table;
 
 	void (*fixup_irq)(struct pci_controller *, pci_dev_t);
+	void (*fixup)(struct pci_controller *, pci_dev_t);
+
 #ifndef CONFIG_DM_PCI
 	/* Low-level architecture-dependent routines */
 	int (*read_byte)(struct pci_controller*, pci_dev_t, int where, u8 *);
@@ -673,6 +680,9 @@ extern int pci_hose_find_cap_start(struct pci_controller *hose, pci_dev_t dev,
 				   u8 hdr_type);
 extern int pci_find_cap(struct pci_controller *hose, pci_dev_t dev, int pos,
 			int cap);
+
+extern int pci_set_cacheline_size(pci_dev_t dev);
+extern int pci_set_mwi(pci_dev_t dev);
 
 #ifdef CONFIG_PCI_FIXUP_DEV
 extern void board_pci_fixup_dev(struct pci_controller *hose, pci_dev_t dev,

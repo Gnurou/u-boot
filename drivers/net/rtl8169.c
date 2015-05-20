@@ -1003,6 +1003,10 @@ int rtl8169_initialize(bd_t *bis)
 			break;
 		}
 
+		err = pci_set_mwi(devno);
+		if (err)
+			debug("failed to enable Mem-Wr-Inval: %d\n", err);
+
 		memset(dev, 0, sizeof(*dev));
 		sprintf (dev->name, "RTL8169#%d", card_number);
 
