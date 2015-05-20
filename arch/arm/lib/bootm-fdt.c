@@ -35,7 +35,7 @@ int arch_fixup_fdt(void *blob)
 		start[bank] = bd->bi_dram[bank].start;
 		size[bank] = bd->bi_dram[bank].size;
 #ifdef CONFIG_ARMV7_NONSEC
-		ret = armv7_apply_memory_carveout(&start[bank], &size[bank]);
+		ret = psci_apply_memory_carveout(&start[bank], &size[bank]);
 		if (ret)
 			return ret;
 #endif

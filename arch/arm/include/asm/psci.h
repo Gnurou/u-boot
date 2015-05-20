@@ -33,6 +33,7 @@
 #define ARM_PSCI_RET_DENIED		(-3)
 
 #ifndef __ASSEMBLY__
+int psci_apply_memory_carveout(u64 *start, u64 *size);
 int psci_update_dt(void *fdt);
 void psci_board_init(void);
 #endif /* ! __ASSEMBLY__ */

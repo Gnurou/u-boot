@@ -26,12 +26,21 @@ struct mc_ctlr {
 	u32 mc_emem_adr_cfg;			/* offset 0x54 */
 	u32 mc_emem_adr_cfg_dev0;		/* offset 0x58 */
 	u32 mc_emem_adr_cfg_dev1;		/* offset 0x5C */
-	u32 reserved3[12];			/* offset 0x60 - 0x8C */
+	u32 reserved3[4];			/* offset 0x60 - 0x6C */
+	u32 mc_security_cfg0;			/* offset 0x70 */
+	u32 mc_security_cfg1;			/* offset 0x74 */
+	u32 reserved4[6];			/* offset 0x78 - 0x8C */
 	u32 mc_emem_arb_reserved[28];		/* offset 0x90 - 0xFC */
-	u32 reserved4[338];			/* offset 0x100 - 0x644 */
+	u32 reserved5[74];			/* offset 0x100 - 0x224 */
+	u32 mc_smmu_translation_enable_0;	/* offset 0x228 */
+	u32 mc_smmu_translation_enable_1;	/* offset 0x22C */
+	u32 mc_smmu_translation_enable_2;	/* offset 0x230 */
+	u32 reserved6[261];			/* offset 0x234 - 0x644 */
 	u32 mc_video_protect_bom;		/* offset 0x648 */
 	u32 mc_video_protect_size_mb;		/* offset 0x64c */
 	u32 mc_video_protect_reg_ctrl;		/* offset 0x650 */
 };
+
+#define TEGRA_MC_SMMU_CONFIG_ENABLE (1 << 0)
 
 #endif	/* _TEGRA114_MC_H_ */

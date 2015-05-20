@@ -89,7 +89,7 @@ static int fdt_psci(void *fdt)
 	return 0;
 }
 
-int armv7_apply_memory_carveout(u64 *start, u64 *size)
+int psci_apply_memory_carveout(u64 *start, u64 *size)
 {
 #ifdef CONFIG_ARMV7_SECURE_RESERVE_SIZE
 	if (*start + *size < CONFIG_ARMV7_SECURE_BASE ||

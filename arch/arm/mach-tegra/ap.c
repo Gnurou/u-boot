@@ -1,16 +1,20 @@
 /*
-* (C) Copyright 2010-2014
-* NVIDIA Corporation <www.nvidia.com>
-*
+ * (C) Copyright 2010-2014 NVIDIA Corporation <www.nvidia.com>
+ * (C) Copyright 2015, Siemens AG
+ *
  * SPDX-License-Identifier:	GPL-2.0+
-*/
+ *
+ * PSCI support contributed by: Jan Kiszka <jan.kiszka@siemens.com>
+ */
 
 /* Tegra AP (Application Processor) code */
 
 #include <common.h>
 #include <asm/io.h>
 #include <asm/arch/gp_padctrl.h>
+#include <asm/arch/flow.h>
 #include <asm/arch/mc.h>
+#include <asm/arch/powergate.h>
 #include <asm/arch-tegra/ap.h>
 #include <asm/arch-tegra/clock.h>
 #include <asm/arch-tegra/fuse.h>
@@ -189,6 +193,89 @@ static void smmu_enable(void)
 	writel(0xffffffff, &mc->mc_smmu_translation_enable_1);
 	writel(0xffffffff, &mc->mc_smmu_translation_enable_2);
 	writel(0xffffffff, &mc->mc_smmu_translation_enable_3);
+
+	/*
+	 * Enable SMMU globally since access to this register is restricted
+	 * to TrustZone-secured requestors.
+	 */
+	value = readl(&mc->mc_smmu_config);
+	value |= TEGRA_MC_SMMU_CONFIG_ENABLE;
+	writel(value, &mc->mc_smmu_config);
+
+	smmu_flush(mc);
+}
+#else
+static void smmu_enable(void)
+{
+}
+#endif
+
+#if defined(CONFIG_ARMV7_PSCI) && !defined(CONFIG_SPL_BUILD)
+static void park_cpu(void)
+{
+	while (1)
+		asm volatile("wfi");
+}
+
+void ap_pm_init(void)
+{
+	struct flow_ctlr *flow = (struct flow_ctlr *)NV_PA_FLOW_BASE;
+
+	writel((u32)park_cpu, EXCEP_VECTOR_CPU_RESET_VECTOR);
+
+	/*
+	 * The naturally expected order of putting these CPUs under Flow
+	 * Controller regime would be
+	 *  - configure the Flow Controller
+	 *  - power up the CPUs
+	 *  - wait for the CPUs to hit wfi and be powered down again
+	 *
+	 * However, this doesn't work in practice. We rather need to power them
+	 * up first and park them in wfi. While they are waiting there, we can
+	 * indeed program the Flow Controller to powergate them on wfi, which
+	 * will then happen immediately as they are already in that state.
+	 */
+	tegra_powergate_power_on(TEGRA_POWERGATE_CPU1);
+	tegra_powergate_power_on(TEGRA_POWERGATE_CPU2);
+	tegra_powergate_power_on(TEGRA_POWERGATE_CPU3);
+
+	writel((2 << CSR_WAIT_WFI_SHIFT) | CSR_ENABLE, &flow->cpu1_csr);
+	writel((4 << CSR_WAIT_WFI_SHIFT) | CSR_ENABLE, &flow->cpu2_csr);
+	writel((8 << CSR_WAIT_WFI_SHIFT) | CSR_ENABLE, &flow->cpu3_csr);
+
+	writel(EVENT_MODE_STOP, &flow->halt_cpu1_events);
+	writel(EVENT_MODE_STOP, &flow->halt_cpu2_events);
+	writel(EVENT_MODE_STOP, &flow->halt_cpu3_events);
+
+	while (!(readl(&flow->cpu1_csr) & CSR_PWR_OFF_STS) ||
+	       !(readl(&flow->cpu2_csr) & CSR_PWR_OFF_STS) ||
+	       !(readl(&flow->cpu3_csr) & CSR_PWR_OFF_STS))
+		/* wait */;
+}
+#endif
+
+#if defined(CONFIG_ARMV7_NONSEC)
+static void smmu_flush(struct mc_ctlr *mc)
+{
+	(void)readl(&mc->mc_smmu_config);
+}
+
+static void smmu_enable(void)
+{
+	struct mc_ctlr *mc = (struct mc_ctlr *)NV_PA_MC_BASE;
+	u32 value;
+
+	/*
+	 * Enable translation for all clients since access to this register
+	 * is restricted to TrustZone-secured requestors. The kernel will use
+	 * the per-SWGROUP enable bits to enable or disable translations.
+	 */
+	writel(0xffffffff, &mc->mc_smmu_translation_enable_0);
+	writel(0xffffffff, &mc->mc_smmu_translation_enable_1);
+	writel(0xffffffff, &mc->mc_smmu_translation_enable_2);
+#if defined(CONFIG_TEGRA124)
+	writel(0xffffffff, &mc->mc_smmu_translation_enable_3);
+#endif
 
 	/*
 	 * Enable SMMU globally since access to this register is restricted

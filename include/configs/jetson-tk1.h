@@ -79,6 +79,8 @@
 #include "tegra-common-usb-gadget.h"
 #include "tegra-common-post.h"
 
+#define CONFIG_ARMV7_NONSEC			1
+#define CONFIG_ARMV7_VIRT			1
 #define CONFIG_ARMV7_PSCI			1
 /* Reserve top 1M for secure RAM */
 #define CONFIG_ARMV7_SECURE_BASE		0xfff00000

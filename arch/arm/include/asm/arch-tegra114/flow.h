@@ -32,4 +32,16 @@ struct flow_ctlr {
 	u32 cluster_control;
 };
 
+/* HALT_COP_EVENTS_0, 0x04 */
+#define EVENT_MSEC		(1 << 24)
+#define EVENT_USEC		(1 << 25)
+#define EVENT_JTAG		(1 << 28)
+#define EVENT_MODE_STOP		(2 << 29)
+
+/* CPUn_CSR_0 */
+#define CSR_ENABLE		(1 << 0)
+#define CSR_IMMEDIATE_WAKE	(1 << 3)
+#define CSR_WAIT_WFI_SHIFT	8
+#define CSR_PWR_OFF_STS		(1 << 16)
+
 #endif	/* _TEGRA114_FLOW_H_ */
