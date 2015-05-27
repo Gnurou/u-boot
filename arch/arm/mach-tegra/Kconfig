@@ -60,11 +60,23 @@ config TEGRA132
 	bool "Tegra132 family"
 	select ARM64
 	select OF_CONTROL
+	select DM
+	select DM_SPI_FLASH
+	select DM_SERIAL
+	select DM_I2C
+	select DM_SPI
+	select DM_GPIO
 
 config TEGRA210
 	bool "Tegra210 family"
 	select ARM64
 	select OF_CONTROL
+	select DM
+	select DM_SPI_FLASH
+	select DM_SERIAL
+	select DM_I2C
+	select DM_SPI
+	select DM_GPIO
 
 endchoice
 
