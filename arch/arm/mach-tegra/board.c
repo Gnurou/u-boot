@@ -94,6 +94,10 @@ unsigned int query_sdram_size(void)
 	 */
 	size_bytes -= SZ_128M;
 #endif
+#if defined(CONFIG_TEGRA210)
+	/* Reserve GPU WPR area, 2 * 128KB */
+	size_bytes = round_down(size_bytes - (SZ_128K * 2), SZ_128K);
+#endif
 
 	return size_bytes;
 }
