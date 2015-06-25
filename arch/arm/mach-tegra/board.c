@@ -111,6 +111,10 @@ static phys_size_t query_sdram_size(void)
 	if (size_bytes == SZ_2G)
 		size_bytes -= SZ_1M;
 #endif
+#if defined(CONFIG_TEGRA210)
+	/* Reserve GPU WPR area, 2 * 128KB */
+	size_bytes = round_down(size_bytes - (SZ_128K * 2), SZ_128K);
+#endif
 
 	return size_bytes;
 }

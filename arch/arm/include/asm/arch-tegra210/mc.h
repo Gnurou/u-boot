@@ -62,11 +62,23 @@ struct mc_ctlr {
 	u32 mc_video_protect_bom;		/* offset 0x648 */
 	u32 mc_video_protect_size_mb;		/* offset 0x64c */
 	u32 mc_video_protect_reg_ctrl;		/* offset 0x650 */
+	u32 reserved11[385];			/* offset 0x654 - 0xc54 */
+	u32 mc_security_carveout2_cfg0;		/* offset 0xc58 */
+	u32 mc_security_carveout2_bom;		/* offset 0xc5c */
+	u32 mc_security_carveout2_bom_hi;	/* offset 0xc60 */
+	u32 mc_security_carveout2_size_128k;	/* offset 0xc64 */
+	u32 reserved12[16];			/* offset 0xc68 - 0xca4 */
+	u32 mc_security_carveout3_cfg0;		/* offset 0xca8 */
+	u32 mc_security_carveout3_bom;		/* offset 0xcac */
+	u32 mc_security_carveout3_bom_hi;	/* offset 0xcb0 */
+	u32 mc_security_carveout3_size_128k;	/* offset 0xcb4 */
 };
 
 #define TEGRA_MC_SMMU_CONFIG_ENABLE (1 << 0)
 
 #define TEGRA_MC_VIDEO_PROTECT_REG_WRITE_ACCESS_ENABLED		(0 << 0)
 #define TEGRA_MC_VIDEO_PROTECT_REG_WRITE_ACCESS_DISABLED	(1 << 0)
+
+#define TEGRA_MC_SECURITY_CARVEOUT_CFG_LOCKED			(1 << 1)
 
 #endif	/* _TEGRA210_MC_H_ */
