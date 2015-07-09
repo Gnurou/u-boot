@@ -25,7 +25,7 @@ obj-y += pinmux-common.o
 obj-y += powergate.o
 obj-y += xusb-padctl.o
 obj-$(CONFIG_DISPLAY_CPUINFO) += sys_info.o
-obj-$(CONFIG_TEGRA124) += vpr.o
+obj-$(CONFIG_TEGRA_GPU) += gpu.o
 obj-$(CONFIG_TEGRA_CLOCK_SCALING) += emc.o
 
 obj-$(CONFIG_TEGRA20) += tegra20/
