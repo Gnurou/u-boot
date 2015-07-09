@@ -25,3 +25,19 @@ static inline bool gpu_configured(void)
 }
 
 #endif /* CONFIG_TEGRA_GPU */
+
+
+#if defined(CONFIG_OF_LIBFDT)
+
+int gpu_enable_node(void *blob, const char *gpupath);
+
+#else /* CONFIG_OF_LIBFDT */
+
+static inline int gpu_enable_node(void *blob, const char *gpupath)
+{
+	return 0;
+}
+
+#endif /* CONFIG_OF_LIBFDT */
+
+#endif
