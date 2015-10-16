@@ -27,6 +27,55 @@ DECLARE_GLOBAL_DATA_PTR;
 
 static bool _configured;
 
+static void fusebypass(size_t addr, u32 val)
+{
+	uint reg;
+
+	reg = readl(0x60006000 + 0x48);
+	reg |= (1 << 28);
+	writel(reg, 0x60006000 + 0x48);
+
+	/* FUSE_WRITE_ACCESS_SW */
+	reg = readl(0x7000f800 + 0x30);
+	reg &= ~(1 << 0);
+	reg |= (1 << 16);
+	writel(reg, 0x7000f800 + 0x30);
+
+	/* FUSE bypass */
+	reg = readl(0x7000f800 + 0x24);
+	reg |= 0x1;
+	writel(reg, 0x7000f800 + 0x24);
+
+	writel(val, 0x7000f800 + addr);
+
+	reg = readl(0x7000f800 + 0x30);
+	reg |= (1 << 0);
+	reg &= ~(1 << 16);
+	writel(reg, 0x7000f800 + 0x30);
+
+	reg = readl(0x60006000 + 0x48);
+	reg &= ~(1 << 28);
+	writel(reg, 0x60006000 + 0x48);
+}
+
+static void bypass_gpu_secure_boot(void)
+{
+	fusebypass(0x264, 0x1);
+	fusebypass(0x10c, 0x1);
+	fusebypass(0x2c8, 0x6);
+}
+
+static void enable_gpu_secure_boot(void)
+{
+	fusebypass(0x264, 0x0);
+	fusebypass(0x21c, 0x0);
+	fusebypass(0x2c8, 0x6);
+}
+	/* GPU override */
+	//writel(0x1, NV_PA_MC_BASE + 0x984);
+	/* BOM */
+	//writel(0x0, &mc->mc_video_protect_bom);
+
 static void config_vpr(void)
 {
 	struct mc_ctlr *mc = (struct mc_ctlr *)NV_PA_MC_BASE;
