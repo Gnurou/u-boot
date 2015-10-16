@@ -171,4 +171,6 @@
 #include <config_distro_defaults.h>
 #endif
 
+#define CONFIG_OF_SYSTEM_SETUP
+
 #endif /* _TEGRA_COMMON_H_ */
